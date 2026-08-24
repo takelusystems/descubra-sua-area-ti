@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   ArrowRight,
   BarChart3,
@@ -17,6 +19,7 @@ import {
 } from 'lucide-react'
 
 import { techAreas, type TechAreaIcon } from './data/areas'
+import QuizPage from './pages/QuizPage'
 
 const areaIcons: Record<TechAreaIcon, LucideIcon> = {
   hardware: Cpu,
@@ -28,6 +31,30 @@ const areaIcons: Record<TechAreaIcon, LucideIcon> = {
 }
 
 function App() {
+  const [quizStarted, setQuizStarted] = useState(false)
+
+  function startQuiz() {
+    setQuizStarted(true)
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
+  function exitQuiz() {
+    setQuizStarted(false)
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
+  if (quizStarted) {
+    return <QuizPage onExit={exitQuiz} />
+  }
+
   return (
     <div className="min-h-screen overflow-hidden bg-[#05070b] text-slate-100">
       <div
@@ -44,6 +71,7 @@ function App() {
           >
             <div className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-cyan-400/20 bg-cyan-400/10">
               <BrainCircuit className="h-5 w-5 text-cyan-300" />
+
               <div className="absolute inset-0 rounded-xl bg-cyan-400/10 opacity-0 blur-md transition-opacity group-hover:opacity-100" />
             </div>
 
@@ -95,9 +123,11 @@ function App() {
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
+                  onClick={startQuiz}
                   className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-white shadow-[0_0_40px_rgba(59,130,246,0.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_55px_rgba(59,130,246,0.3)] focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-[#05070b]"
                 >
                   Começar o quiz
+
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </button>
 
@@ -206,9 +236,20 @@ function App() {
                   </div>
 
                   <div className="mt-7 grid grid-cols-3 gap-2 sm:gap-3">
-                    <MiniResultCard icon={BriefcaseBusiness} label="Carreiras" />
-                    <MiniResultCard icon={Route} label="Trilha" />
-                    <MiniResultCard icon={Gauge} label="Perfil" />
+                    <MiniResultCard
+                      icon={BriefcaseBusiness}
+                      label="Carreiras"
+                    />
+
+                    <MiniResultCard
+                      icon={Route}
+                      label="Trilha"
+                    />
+
+                    <MiniResultCard
+                      icon={Gauge}
+                      label="Perfil"
+                    />
                   </div>
 
                   <p className="mt-5 text-center text-xs leading-5 text-slate-600">
@@ -275,6 +316,7 @@ function App() {
 
                       <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-500 transition group-hover:text-slate-300">
                         Faz parte do quiz
+
                         <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                       </div>
                     </div>
@@ -347,9 +389,11 @@ function App() {
 
               <button
                 type="button"
+                onClick={startQuiz}
                 className="group mt-5 inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-slate-950 transition duration-300 hover:-translate-y-0.5 hover:bg-cyan-100 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-[#05070b]"
               >
                 Começar o quiz
+
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </button>
             </div>
@@ -390,8 +434,13 @@ function CompatibilityBar({
   return (
     <div>
       <div className="mb-2 flex items-center justify-between gap-4 text-sm">
-        <span className="font-semibold text-slate-300">{name}</span>
-        <span className="font-black text-slate-200">{value}%</span>
+        <span className="font-semibold text-slate-300">
+          {name}
+        </span>
+
+        <span className="font-black text-slate-200">
+          {value}%
+        </span>
       </div>
 
       <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
@@ -409,10 +458,14 @@ interface MiniResultCardProps {
   label: string
 }
 
-function MiniResultCard({ icon: Icon, label }: MiniResultCardProps) {
+function MiniResultCard({
+  icon: Icon,
+  label,
+}: MiniResultCardProps) {
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.025] px-2 py-3 text-center">
       <Icon className="mx-auto h-4 w-4 text-slate-400" />
+
       <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">
         {label}
       </p>
@@ -473,9 +526,13 @@ function HowItWorksCard({
         </span>
       </div>
 
-      <h3 className="mt-6 text-xl font-black text-white">{title}</h3>
+      <h3 className="mt-6 text-xl font-black text-white">
+        {title}
+      </h3>
 
-      <p className="mt-3 text-sm leading-6 text-slate-400">{description}</p>
+      <p className="mt-3 text-sm leading-6 text-slate-400">
+        {description}
+      </p>
     </article>
   )
 }
