@@ -6,22 +6,14 @@ import {
   BrainCircuit,
   Check,
   CheckCircle2,
-  RotateCcw,
   Sparkles,
-  Trophy,
 } from 'lucide-react'
 
 import QuizProgress from '../components/QuizProgress'
-
-import {
-  techAreas,
-  type TechAreaIcon,
-} from '../data/areas'
-
 import { quizQuestions } from '../data/questions'
+import ResultPage from './ResultPage'
 
 import type { QuizAnswers } from '../types/quiz'
-
 import type { QuizResult } from '../types/result'
 
 import { calculateQuizResult } from '../utils/scoring'
@@ -116,7 +108,7 @@ function QuizPage({ onExit }: QuizPageProps) {
 
   if (result) {
     return (
-      <ScoringValidation
+      <ResultPage
         result={result}
         onReview={handleReview}
         onRestart={handleRestart}
@@ -318,231 +310,6 @@ function QuizPage({ onExit }: QuizPageProps) {
       </main>
     </div>
   )
-}
-
-interface ScoringValidationProps {
-  result: QuizResult
-  onReview: () => void
-  onRestart: () => void
-  onExit: () => void
-}
-
-function ScoringValidation({
-  result,
-  onReview,
-  onRestart,
-  onExit,
-}: ScoringValidationProps) {
-  const mainArea =
-    getAreaById(result.mainArea)
-
-  const secondaryAreas =
-    result.secondaryAreas.map(getAreaById)
-
-  return (
-    <div className="hero-glow min-h-screen bg-[#05070b] px-5 py-10 text-slate-100 sm:px-6 sm:py-14">
-      <div
-        aria-hidden="true"
-        className="ambient-grid pointer-events-none fixed inset-0"
-      />
-
-      <div className="relative mx-auto max-w-4xl">
-        <div className="text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-400/20 bg-emerald-400/10">
-            <CheckCircle2 className="h-8 w-8 text-emerald-300" />
-          </div>
-
-          <p className="mt-6 text-xs font-black uppercase tracking-[0.2em] text-emerald-300">
-            Validação da pontuação
-          </p>
-
-          <h1 className="mt-4 text-3xl font-black tracking-[-0.03em] text-white sm:text-4xl">
-            O cálculo está funcionando
-          </h1>
-
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-400 sm:text-base">
-            Esta ainda não é a página final do
-            resultado. Estamos exibindo os dados
-            matemáticos para conferir o sistema antes
-            de construir a experiência definitiva.
-          </p>
-        </div>
-
-        <div className="mt-10 overflow-hidden rounded-[2rem] border border-cyan-400/15 bg-gradient-to-br from-cyan-400/[0.08] via-[#091018] to-violet-400/[0.06] p-6 sm:p-8">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-cyan-400/20 bg-cyan-400/10">
-              <Trophy className="h-8 w-8 text-cyan-300" />
-            </div>
-
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
-                Área predominante
-              </p>
-
-              <h2 className="mt-2 text-3xl font-black text-white">
-                {mainArea.name}
-              </h2>
-
-              <p className="mt-2 text-sm text-slate-500">
-                Compatibilidade calculada:{' '}
-                <strong className="text-slate-300">
-                  {Math.round(
-                    result.scores[result.mainArea]
-                      .percentage,
-                  )}
-                  %
-                </strong>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-5 rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">
-            Áreas secundárias
-          </p>
-
-          <div className="mt-3 flex flex-wrap gap-2">
-            {secondaryAreas.map((area) => (
-              <span
-                key={area.id}
-                className="rounded-full border border-violet-400/15 bg-violet-400/[0.06] px-3 py-1.5 text-sm font-bold text-violet-200"
-              >
-                {area.name}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-slate-500">
-                Ranking completo
-              </p>
-
-              <h2 className="mt-2 text-2xl font-black text-white">
-                Compatibilidade por área
-              </h2>
-            </div>
-
-            <p className="text-xs text-slate-600">
-              {result.totalAnswered} perguntas
-              respondidas
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            {result.ranking.map(
-              (score, index) => {
-                const area =
-                  getAreaById(score.area)
-
-                return (
-                  <div
-                    key={score.area}
-                    className="rounded-2xl border border-white/[0.07] bg-[#090c13]/85 p-5"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.035] text-sm font-black text-slate-500">
-                        {index + 1}
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-4">
-                          <div>
-                            <p className="font-black text-white">
-                              {area.name}
-                            </p>
-
-                            <p className="mt-1 text-xs text-slate-600">
-                              {score.rawScore} pontos de{' '}
-                              {score.maxScore} possíveis
-                            </p>
-                          </div>
-
-                          <span className="shrink-0 text-xl font-black text-slate-200">
-                            {Math.round(
-                              score.percentage,
-                            )}
-                            %
-                          </span>
-                        </div>
-
-                        <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/[0.06]">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 transition-[width] duration-700"
-                            style={{
-                              width: `${score.percentage}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )
-              },
-            )}
-          </div>
-        </div>
-
-        <div className="mt-8 rounded-2xl border border-amber-400/10 bg-amber-400/[0.04] p-5">
-          <p className="text-sm font-bold text-amber-200">
-            O que estamos validando agora?
-          </p>
-
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            Cada percentual representa a pontuação
-            obtida dividida pela pontuação máxima
-            possível naquela área. Por isso os seis
-            percentuais não precisam totalizar 100%.
-          </p>
-        </div>
-
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={onReview}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-5 py-3 text-sm font-bold text-slate-300 transition hover:bg-white/[0.06] hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Revisar respostas
-          </button>
-
-          <button
-            type="button"
-            onClick={onRestart}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-cyan-100"
-          >
-            <RotateCcw className="h-4 w-4" />
-            Fazer novo teste
-          </button>
-        </div>
-
-        <button
-          type="button"
-          onClick={onExit}
-          className="mx-auto mt-5 block text-sm font-semibold text-slate-600 transition hover:text-slate-300"
-        >
-          Voltar para a página inicial
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function getAreaById(areaId: TechAreaIcon) {
-  const area = techAreas.find(
-    (item) => item.id === areaId,
-  )
-
-  if (!area) {
-    throw new Error(
-      `Área de tecnologia não encontrada: ${areaId}`,
-    )
-  }
-
-  return area
 }
 
 export default QuizPage
