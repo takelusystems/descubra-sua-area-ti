@@ -313,3 +313,16 @@ function QuizPage({ onExit }: QuizPageProps) {
 }
 
 export default QuizPage
+
+
+
+
+
+
+
+
+
+
+
+
+
