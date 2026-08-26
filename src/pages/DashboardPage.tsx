@@ -2,8 +2,8 @@ import {
   ArrowLeft,
   BarChart3,
   BrainCircuit,
-  Cpu,
   Code2,
+  Cpu,
   Gamepad2,
   Medal,
   Network,
@@ -21,6 +21,8 @@ import {
   useMemo,
   useState,
 } from 'react'
+
+import AreaDistributionDonut from '../components/AreaDistributionDonut'
 
 import {
   techAreas,
@@ -54,15 +56,18 @@ const areaVisuals: Record<
   hardware: {
     icon: Cpu,
     iconClass: 'text-cyan-300',
-    borderClass: 'border-cyan-400/15',
+    borderClass:
+      'border-cyan-400/15',
     barClass:
       'from-cyan-400 to-blue-500',
   },
 
   programming: {
     icon: Code2,
-    iconClass: 'text-violet-300',
-    borderClass: 'border-violet-400/15',
+    iconClass:
+      'text-violet-300',
+    borderClass:
+      'border-violet-400/15',
     barClass:
       'from-violet-400 to-purple-500',
   },
@@ -70,14 +75,16 @@ const areaVisuals: Record<
   networks: {
     icon: Network,
     iconClass: 'text-blue-300',
-    borderClass: 'border-blue-400/15',
+    borderClass:
+      'border-blue-400/15',
     barClass:
       'from-blue-400 to-cyan-500',
   },
 
   cybersecurity: {
     icon: ShieldCheck,
-    iconClass: 'text-emerald-300',
+    iconClass:
+      'text-emerald-300',
     borderClass:
       'border-emerald-400/15',
     barClass:
@@ -86,7 +93,8 @@ const areaVisuals: Record<
 
   games: {
     icon: Gamepad2,
-    iconClass: 'text-fuchsia-300',
+    iconClass:
+      'text-fuchsia-300',
     borderClass:
       'border-fuchsia-400/15',
     barClass:
@@ -95,8 +103,10 @@ const areaVisuals: Record<
 
   ai: {
     icon: BrainCircuit,
-    iconClass: 'text-amber-300',
-    borderClass: 'border-amber-400/15',
+    iconClass:
+      'text-amber-300',
+    borderClass:
+      'border-amber-400/15',
     barClass:
       'from-amber-400 to-orange-500',
   },
@@ -134,10 +144,15 @@ function DashboardPage({
         const data =
           await getQuizAreaDistribution()
 
-        setDistribution(data)
-      } catch (caughtError) {
+        setDistribution(
+          data,
+        )
+      } catch (
+        caughtError
+      ) {
         if (
-          caughtError instanceof Error
+          caughtError instanceof
+          Error
         ) {
           setError(
             caughtError.message,
@@ -156,40 +171,47 @@ function DashboardPage({
     void loadDashboard()
   }, [loadDashboard])
 
-  const ranking = useMemo(
-    () =>
-      [...distribution].sort(
-        (areaA, areaB) => {
-          if (
-            areaB.total !==
-            areaA.total
-          ) {
-            return (
-              areaB.total -
+  const ranking =
+    useMemo(
+      () =>
+        [
+          ...distribution,
+        ].sort(
+          (
+            areaA,
+            areaB,
+          ) => {
+            if (
+              areaB.total !==
               areaA.total
-            )
-          }
+            ) {
+              return (
+                areaB.total -
+                areaA.total
+              )
+            }
 
-          return (
-            techAreas.findIndex(
-              (area) =>
-                area.id ===
-                areaA.area,
-            ) -
-            techAreas.findIndex(
-              (area) =>
-                area.id ===
-                areaB.area,
+            return (
+              techAreas.findIndex(
+                (area) =>
+                  area.id ===
+                  areaA.area,
+              ) -
+              techAreas.findIndex(
+                (area) =>
+                  area.id ===
+                  areaB.area,
+              )
             )
-          )
-        },
-      ),
-    [distribution],
-  )
+          },
+        ),
+      [distribution],
+    )
 
   const totalParticipants =
     distribution[0]
-      ?.total_participants ?? 0
+      ?.total_participants ??
+    0
 
   const leader =
     totalParticipants > 0
@@ -266,12 +288,15 @@ function DashboardPage({
             <DashboardLoading />
           )}
 
-          {!loading && error && (
-            <DashboardError
-              message={error}
-              onRetry={loadDashboard}
-            />
-          )}
+          {!loading &&
+            error && (
+              <DashboardError
+                message={error}
+                onRetry={
+                  loadDashboard
+                }
+              />
+            )}
 
           {!loading &&
             !error &&
@@ -307,11 +332,9 @@ function DashboardPage({
                     <StatisticCard
                       icon={Trophy}
                       eyebrow="Área mais escolhida"
-                      title={
-                        getAreaName(
-                          leader.area,
-                        )
-                      }
+                      title={getAreaName(
+                        leader.area,
+                      )}
                       description={`${formatPercentage(
                         leader.percentage,
                       )} dos participantes`}
@@ -323,11 +346,9 @@ function DashboardPage({
                     <StatisticCard
                       icon={Medal}
                       eyebrow="Segunda colocada"
-                      title={
-                        getAreaName(
-                          runnerUp.area,
-                        )
-                      }
+                      title={getAreaName(
+                        runnerUp.area,
+                      )}
                       description={`${formatPercentage(
                         runnerUp.percentage,
                       )} dos participantes`}
@@ -336,24 +357,23 @@ function DashboardPage({
                   )}
                 </section>
 
-                <section className="mt-8 rounded-[2rem] border border-white/[0.07] bg-[#090c13]/85 p-6 shadow-2xl shadow-black/20 sm:p-8">
-                  <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                <section className="mt-8 overflow-hidden rounded-[2rem] border border-white/[0.07] bg-[#090c13]/85 p-6 shadow-2xl shadow-black/20 sm:p-8">
+                  <div className="flex flex-col gap-5 border-b border-white/[0.06] pb-6 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                      <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
-                        Distribuição geral
+                      <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+                        Visão geral
                       </p>
 
                       <h2 className="mt-3 text-2xl font-black text-white sm:text-3xl">
-                        Qual área de TI está
-                        predominando?
+                        Distribuição dos resultados
                       </h2>
 
                       <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-                        Cada participante
-                        entra nesta
-                        distribuição apenas
-                        pela sua área
-                        predominante.
+                        O gráfico representa a
+                        proporção de participantes
+                        cuja área predominante foi
+                        cada um dos seis caminhos
+                        avaliados pelo quiz.
                       </p>
                     </div>
 
@@ -367,6 +387,37 @@ function DashboardPage({
                       <RefreshCw className="h-3.5 w-3.5" />
                       Atualizar dados
                     </button>
+                  </div>
+
+                  <div className="mt-8">
+                    <AreaDistributionDonut
+                      data={
+                        distribution
+                      }
+                      totalParticipants={
+                        totalParticipants
+                      }
+                    />
+                  </div>
+                </section>
+
+                <section className="mt-8 rounded-[2rem] border border-white/[0.07] bg-[#090c13]/85 p-6 shadow-2xl shadow-black/20 sm:p-8">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
+                      Comparação detalhada
+                    </p>
+
+                    <h2 className="mt-3 text-2xl font-black text-white sm:text-3xl">
+                      Qual área de TI está
+                      predominando?
+                    </h2>
+
+                    <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
+                      As barras facilitam a
+                      comparação precisa entre
+                      quantidade e percentual
+                      de cada área.
+                    </p>
                   </div>
 
                   <div className="mt-8 space-y-4">
@@ -433,9 +484,10 @@ function DashboardPage({
                       Esta página recebe
                       apenas contagens e
                       percentuais agregados.
-                      Os registros individuais
-                      não são disponibilizados
-                      ao navegador.
+                      Os registros
+                      individuais não são
+                      disponibilizados ao
+                      navegador.
                     </p>
                   </div>
                 </section>
@@ -510,20 +562,24 @@ function AreaDistributionCard({
   item,
   position,
 }: AreaDistributionCardProps) {
-  const area = techAreas.find(
-    (currentArea) =>
-      currentArea.id ===
-      item.area,
-  )
+  const area =
+    techAreas.find(
+      (currentArea) =>
+        currentArea.id ===
+        item.area,
+    )
 
   if (!area) {
     return null
   }
 
   const visual =
-    areaVisuals[item.area]
+    areaVisuals[
+      item.area
+    ]
 
-  const Icon = visual.icon
+  const Icon =
+    visual.icon
 
   return (
     <article
@@ -670,9 +726,10 @@ function EmptyDashboard({
 
       <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-500">
         Assim que os primeiros
-        participantes concluírem o quiz,
-        a distribuição das áreas
-        aparecerá automaticamente aqui.
+        participantes concluírem o
+        quiz, a distribuição das
+        áreas aparecerá
+        automaticamente aqui.
       </p>
 
       <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
