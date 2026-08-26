@@ -7,11 +7,13 @@ import {
   Gamepad2,
   Medal,
   Network,
+  Radio,
   RefreshCw,
   ShieldCheck,
   Sparkles,
   Trophy,
   Users,
+  WifiOff,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -19,6 +21,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 
@@ -31,6 +34,7 @@ import {
 
 import {
   getQuizAreaDistribution,
+  subscribeToQuizResultsChanges,
 } from '../services/quizResults'
 
 import type {
@@ -48,6 +52,11 @@ interface AreaVisual {
   borderClass: string
   barClass: string
 }
+
+type RealtimeStatus =
+  | 'connecting'
+  | 'connected'
+  | 'error'
 
 const areaVisuals: Record<
   TechAreaIcon,
@@ -135,40 +144,149 @@ function DashboardPage({
     null,
   )
 
+  const [
+    realtimeStatus,
+    setRealtimeStatus,
+  ] = useState<RealtimeStatus>(
+    'connecting',
+  )
+
+  const realtimeRefreshTimer =
+    useRef<
+      ReturnType<
+        typeof setTimeout
+      > | null
+    >(null)
+
   const loadDashboard =
-    useCallback(async () => {
-      setLoading(true)
-      setError(null)
-
-      try {
-        const data =
-          await getQuizAreaDistribution()
-
-        setDistribution(
-          data,
-        )
-      } catch (
-        caughtError
-      ) {
-        if (
-          caughtError instanceof
-          Error
-        ) {
-          setError(
-            caughtError.message,
-          )
-        } else {
-          setError(
-            'Não foi possível carregar o panorama.',
-          )
+    useCallback(
+      async (
+        showLoading = true,
+      ) => {
+        if (showLoading) {
+          setLoading(true)
+          setError(null)
         }
-      } finally {
-        setLoading(false)
-      }
-    }, [])
+
+        try {
+          const data =
+            await getQuizAreaDistribution()
+
+          setDistribution(
+            data,
+          )
+
+          setError(null)
+        } catch (
+          caughtError
+        ) {
+          if (!showLoading) {
+            console.error(
+              'Não foi possível atualizar o panorama em tempo real:',
+              caughtError,
+            )
+
+            return
+          }
+
+          if (
+            caughtError instanceof
+            Error
+          ) {
+            setError(
+              caughtError.message,
+            )
+          } else {
+            setError(
+              'Não foi possível carregar o panorama.',
+            )
+          }
+        } finally {
+          if (showLoading) {
+            setLoading(false)
+          }
+        }
+      },
+      [],
+    )
 
   useEffect(() => {
     void loadDashboard()
+  }, [loadDashboard])
+
+  useEffect(() => {
+    setRealtimeStatus(
+      'connecting',
+    )
+
+    const unsubscribe =
+      subscribeToQuizResultsChanges(
+        () => {
+          if (
+            realtimeRefreshTimer.current
+          ) {
+            clearTimeout(
+              realtimeRefreshTimer.current,
+            )
+          }
+
+          realtimeRefreshTimer.current =
+            setTimeout(
+              () => {
+                void loadDashboard(
+                  false,
+                )
+              },
+              700,
+            )
+        },
+
+        (status) => {
+          if (
+            status ===
+            'SUBSCRIBED'
+          ) {
+            setRealtimeStatus(
+              'connected',
+            )
+
+            return
+          }
+
+          if (
+            status ===
+              'CHANNEL_ERROR' ||
+            status ===
+              'TIMED_OUT'
+          ) {
+            setRealtimeStatus(
+              'error',
+            )
+
+            return
+          }
+
+          if (
+            status === 'CLOSED'
+          ) {
+            setRealtimeStatus(
+              'connecting',
+            )
+          }
+        },
+      )
+
+    return () => {
+      if (
+        realtimeRefreshTimer.current
+      ) {
+        clearTimeout(
+          realtimeRefreshTimer.current,
+        )
+      }
+
+      unsubscribe()
+    }
   }, [loadDashboard])
 
   const ranking =
@@ -282,6 +400,14 @@ function DashboardPage({
               todas as respostas
               registradas até agora.
             </p>
+
+            <div className="mt-6 flex justify-center">
+              <RealtimeBadge
+                status={
+                  realtimeStatus
+                }
+              />
+            </div>
           </section>
 
           {loading && (
@@ -515,6 +641,50 @@ function DashboardPage({
   )
 }
 
+interface RealtimeBadgeProps {
+  status: RealtimeStatus
+}
+
+function RealtimeBadge({
+  status,
+}: RealtimeBadgeProps) {
+  if (
+    status === 'connected'
+  ) {
+    return (
+      <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-300">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-300 opacity-40" />
+
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-300" />
+        </span>
+
+        Atualização automática ativa
+      </div>
+    )
+  }
+
+  if (
+    status === 'error'
+  ) {
+    return (
+      <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/15 bg-amber-400/[0.05] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-amber-300">
+        <WifiOff className="h-3.5 w-3.5" />
+
+        Atualização automática indisponível
+      </div>
+    )
+  }
+
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/15 bg-blue-400/[0.05] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-blue-300">
+      <Radio className="h-3.5 w-3.5 animate-pulse" />
+
+      Conectando atualização automática
+    </div>
+  )
+}
+
 interface StatisticCardProps {
   icon: LucideIcon
   eyebrow: string
@@ -659,7 +829,9 @@ function DashboardLoading() {
 
 interface DashboardErrorProps {
   message: string
-  onRetry: () => Promise<void>
+  onRetry: (
+    showLoading?: boolean,
+  ) => Promise<void>
 }
 
 function DashboardError({
@@ -706,7 +878,9 @@ function DashboardError({
 
 interface EmptyDashboardProps {
   onStartQuiz: () => void
-  onRefresh: () => Promise<void>
+  onRefresh: (
+    showLoading?: boolean,
+  ) => Promise<void>
 }
 
 function EmptyDashboard({
@@ -735,7 +909,9 @@ function EmptyDashboard({
       <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
         <button
           type="button"
-          onClick={onStartQuiz}
+          onClick={
+            onStartQuiz
+          }
           className="rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 px-5 py-3 text-sm font-black text-white"
         >
           Fazer o quiz

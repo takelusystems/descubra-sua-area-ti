@@ -47,34 +47,35 @@ export async function saveQuizResult(
       submissionKey,
     )
 
-  const { error } = await supabase.rpc(
-    'submit_quiz_result',
-    {
-      p_submission_key:
-        payload.submission_key,
+  const { error } =
+    await supabase.rpc(
+      'submit_quiz_result',
+      {
+        p_submission_key:
+          payload.submission_key,
 
-      p_hardware_score:
-        payload.hardware_score,
+        p_hardware_score:
+          payload.hardware_score,
 
-      p_programming_score:
-        payload.programming_score,
+        p_programming_score:
+          payload.programming_score,
 
-      p_network_score:
-        payload.network_score,
+        p_network_score:
+          payload.network_score,
 
-      p_cybersecurity_score:
-        payload.cybersecurity_score,
+        p_cybersecurity_score:
+          payload.cybersecurity_score,
 
-      p_games_score:
-        payload.games_score,
+        p_games_score:
+          payload.games_score,
 
-      p_ai_score:
-        payload.ai_score,
+        p_ai_score:
+          payload.ai_score,
 
-      p_main_area:
-        payload.main_area,
-    },
-  )
+        p_main_area:
+          payload.main_area,
+      },
+    )
 
   if (error) {
     throw new Error(
@@ -114,6 +115,42 @@ export async function getQuizAreaDistribution():
   }))
 }
 
+export function subscribeToQuizResultsChanges(
+  onChange: () => void,
+  onStatusChange?: (
+    status: string,
+  ) => void,
+) {
+  const channel =
+    supabase
+      .channel(
+        'quiz-dashboard',
+      )
+      .on(
+        'broadcast',
+        {
+          event:
+            'quiz_results_changed',
+        },
+        () => {
+          onChange()
+        },
+      )
+      .subscribe(
+        (status) => {
+          onStatusChange?.(
+            String(status),
+          )
+        },
+      )
+
+  return () => {
+    void supabase.removeChannel(
+      channel,
+    )
+  }
+}
+
 export async function testSupabaseConnection():
   Promise<AreaDistributionRow[]> {
   const distribution =
@@ -136,7 +173,9 @@ export async function testSupabaseConnection():
   const allAreasReturned =
     [...expectedAreas].every(
       (areaId) =>
-        returnedAreas.has(areaId),
+        returnedAreas.has(
+          areaId,
+        ),
     )
 
   if (!allAreasReturned) {
