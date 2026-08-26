@@ -26,10 +26,7 @@ import {
 import DashboardPage from './pages/DashboardPage'
 import QuizPage from './pages/QuizPage'
 
-const areaIcons: Record<
-  TechAreaIcon,
-  LucideIcon
-> = {
+const areaIcons: Record<TechAreaIcon, LucideIcon> = {
   hardware: Cpu,
   programming: Code2,
   networks: Network,
@@ -47,9 +44,7 @@ function App() {
   const [
     currentView,
     setCurrentView,
-  ] = useState<AppView>(
-    'landing',
-  )
+  ] = useState<AppView>('landing')
 
   function goToTop() {
     window.scrollTo({
@@ -64,25 +59,16 @@ function App() {
   }
 
   function openDashboard() {
-    setCurrentView(
-      'dashboard',
-    )
-
+    setCurrentView('dashboard')
     goToTop()
   }
 
   function goHome() {
-    setCurrentView(
-      'landing',
-    )
-
+    setCurrentView('landing')
     goToTop()
   }
 
-  if (
-    currentView ===
-    'quiz'
-  ) {
+  if (currentView === 'quiz') {
     return (
       <QuizPage
         onExit={goHome}
@@ -90,10 +76,7 @@ function App() {
     )
   }
 
-  if (
-    currentView ===
-    'dashboard'
-  ) {
+  if (currentView === 'dashboard') {
     return (
       <DashboardPage
         onBack={goHome}
@@ -109,7 +92,7 @@ function App() {
         className="ambient-grid pointer-events-none fixed inset-0"
       />
 
-      <header className="relative z-50 border-b border-white/5 bg-[#05070b]/75 backdrop-blur-xl">
+      <header className="relative z-50 border-b border-white/5 bg-[#05070b]/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-6 lg:px-8">
           <a
             href="#inicio"
@@ -136,9 +119,7 @@ function App() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={
-                openDashboard
-              }
+              onClick={openDashboard}
               className="inline-flex items-center gap-2 rounded-xl border border-violet-400/15 bg-violet-400/[0.05] px-3 py-2 text-xs font-bold text-violet-200 transition hover:border-violet-400/30 hover:bg-violet-400/[0.09] sm:px-4 sm:text-sm"
             >
               <BarChart3 className="h-4 w-4" />
@@ -159,6 +140,7 @@ function App() {
       </header>
 
       <main>
+        {/* HERO */}
         <section
           id="inicio"
           className="hero-glow relative px-5 pb-20 pt-16 sm:px-6 sm:pb-24 sm:pt-20 lg:px-8 lg:pb-32 lg:pt-28"
@@ -199,13 +181,10 @@ function App() {
 
                 <button
                   type="button"
-                  onClick={
-                    openDashboard
-                  }
+                  onClick={openDashboard}
                   className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-7 py-4 text-sm font-bold text-slate-300 transition hover:border-violet-400/20 hover:bg-violet-400/[0.05] hover:text-white"
                 >
                   <BarChart3 className="h-5 w-5 text-violet-300" />
-
                   Ver panorama
                 </button>
               </div>
@@ -344,11 +323,17 @@ function App() {
           </div>
         </section>
 
+        {/* ÁREAS */}
         <section
           id="areas"
-          className="relative border-y border-white/5 bg-white/[0.015] px-5 py-20 sm:px-6 sm:py-24 lg:px-8"
+          className="relative border-y border-white/5 bg-[#070a10]/75 px-5 py-20 sm:px-6 sm:py-24 lg:px-8"
         >
-          <div className="mx-auto max-w-7xl">
+          <div
+            aria-hidden="true"
+            className="absolute left-1/2 top-1/2 h-[500px] w-[900px] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-500/[0.035] blur-3xl"
+          />
+
+          <div className="relative mx-auto max-w-7xl">
             <SectionHeading
               eyebrow="Explore possibilidades"
               title="Seis caminhos. Um perfil que é só seu."
@@ -359,14 +344,12 @@ function App() {
               {techAreas.map(
                 (area) => {
                   const Icon =
-                    areaIcons[
-                      area.id
-                    ]
+                    areaIcons[area.id]
 
                   return (
                     <article
                       key={area.id}
-                      className={`group relative overflow-hidden rounded-3xl border border-white/[0.07] bg-[#0a0d14]/75 p-6 transition duration-300 hover:-translate-y-1 hover:bg-[#0d111a] ${area.borderClass}`}
+                      className={`group relative overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0b0f17]/90 p-6 shadow-lg shadow-black/10 transition duration-300 hover:-translate-y-1 hover:border-white/[0.14] hover:bg-[#0e131d] ${area.borderClass}`}
                     >
                       <div
                         aria-hidden="true"
@@ -375,13 +358,13 @@ function App() {
 
                       <div className="relative">
                         <div className="flex items-start justify-between gap-4">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.07] bg-white/[0.04]">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.045]">
                             <Icon
                               className={`h-6 w-6 ${area.iconClass}`}
                             />
                           </div>
 
-                          <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                          <span className="rounded-full border border-white/[0.07] bg-white/[0.035] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">
                             {area.tag}
                           </span>
                         </div>
@@ -391,15 +374,13 @@ function App() {
                         </h3>
 
                         <p className="mt-3 text-sm leading-6 text-slate-400">
-                          {
-                            area.description
-                          }
+                          {area.description}
                         </p>
 
-                        <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-500 transition group-hover:text-slate-300">
-                          Faz parte do quiz
+                        <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/10 bg-emerald-400/[0.04] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
+                          <Check className="h-3.5 w-3.5 text-emerald-400" />
 
-                          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                          Área avaliada no quiz
                         </div>
                       </div>
                     </article>
@@ -410,38 +391,121 @@ function App() {
           </div>
         </section>
 
-        <section className="px-5 py-20 sm:px-6 sm:py-24 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <SectionHeading
-              eyebrow="Como funciona"
-              title="Da curiosidade ao seu primeiro caminho em TI."
-              description="A experiência foi pensada para transformar respostas simples em informações úteis para quem ainda está explorando o universo da tecnologia."
-            />
+        {/* COMO FUNCIONA */}
+        <section className="relative px-5 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
+          <div
+            aria-hidden="true"
+            className="absolute right-0 top-20 h-80 w-80 rounded-full bg-violet-500/[0.05] blur-3xl"
+          />
 
-            <div className="mt-12 grid gap-4 md:grid-cols-3">
-              <HowItWorksCard
-                number="01"
-                icon={Gauge}
-                title="Responda"
-                description="Escolha as alternativas que melhor representam como você pensa, resolve problemas e se interessa por tecnologia."
-              />
+          <div
+            aria-hidden="true"
+            className="absolute bottom-20 left-0 h-80 w-80 rounded-full bg-cyan-500/[0.04] blur-3xl"
+          />
 
-              <HowItWorksCard
-                number="02"
-                icon={BarChart3}
-                title="Descubra seu perfil"
-                description="O sistema compara suas respostas entre as seis áreas e calcula suas compatibilidades."
-              />
+          <div className="relative mx-auto max-w-7xl">
+            <div className="overflow-hidden rounded-[2.4rem] border border-white/[0.08] bg-gradient-to-br from-[#0c1018] via-[#090d14] to-[#080b11] p-6 shadow-[0_30px_80px_rgba(0,0,0,0.3)] sm:p-9 lg:p-12">
+              <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
+                <div className="text-left">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/15 bg-cyan-400/[0.06] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-300">
+                    <Route className="h-3.5 w-3.5" />
+                    Como funciona
+                  </div>
 
-              <HowItWorksCard
-                number="03"
-                icon={Route}
-                title="Encontre um caminho"
-                description="Receba sugestões de profissões, assuntos para estudar e uma trilha inicial baseada no seu resultado."
-              />
+                  <h2 className="mt-5 text-3xl font-black tracking-[-0.035em] text-white sm:text-4xl">
+                    Da curiosidade ao seu primeiro caminho em TI.
+                  </h2>
+
+                  <p className="mt-5 max-w-xl text-sm leading-7 text-slate-400 sm:text-base">
+                    Em poucos passos, suas
+                    respostas se transformam
+                    em um perfil com
+                    informações práticas
+                    para você conhecer melhor
+                    o universo da tecnologia.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-white/[0.07] bg-black/15 p-5 sm:p-6">
+                  <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
+                    Ao concluir, você recebe
+                  </p>
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                    <FeaturePill
+                      icon={Gauge}
+                      text="Perfil de TI"
+                    />
+
+                    <FeaturePill
+                      icon={BriefcaseBusiness}
+                      text="Carreiras"
+                    />
+
+                    <FeaturePill
+                      icon={Route}
+                      text="Trilha de estudos"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative mt-10 grid gap-5 md:grid-cols-3">
+                <HowItWorksCard
+                  number="01"
+                  icon={Gauge}
+                  eyebrow="Primeiro passo"
+                  title="Responda"
+                  description="Escolha as alternativas que melhor representam como você pensa, resolve problemas e se interessa por tecnologia."
+                  accent="cyan"
+                />
+
+                <HowItWorksCard
+                  number="02"
+                  icon={BarChart3}
+                  eyebrow="Análise"
+                  title="Descubra seu perfil"
+                  description="O sistema compara suas respostas entre as seis áreas e calcula suas compatibilidades de forma normalizada."
+                  accent="violet"
+                />
+
+                <HowItWorksCard
+                  number="03"
+                  icon={Route}
+                  eyebrow="Próximo caminho"
+                  title="Saiba por onde começar"
+                  description="Receba sugestões de profissões, assuntos para estudar e uma trilha inicial baseada no seu resultado."
+                  accent="emerald"
+                />
+              </div>
+
+              <div className="mt-8 grid gap-4 rounded-2xl border border-white/[0.07] bg-black/15 p-5 sm:grid-cols-3 sm:p-6">
+                <QuizInfoItem
+                  accent="cyan"
+                  title="15 perguntas"
+                  description="Uma sequência curta e objetiva."
+                />
+
+                <QuizInfoItem
+                  accent="violet"
+                  title="Sem respostas certas"
+                  description="O foco é identificar compatibilidades."
+                />
+
+                <QuizInfoItem
+                  accent="emerald"
+                  title="Resultado imediato"
+                  description="Perfil, carreiras e trilha de estudos."
+                />
+              </div>
             </div>
+          </div>
+        </section>
 
-            <div className="mt-12 overflow-hidden rounded-[2rem] border border-emerald-400/10 bg-gradient-to-br from-emerald-400/[0.06] via-[#09100f] to-cyan-400/[0.03] p-6 sm:p-8">
+        {/* PRIVACIDADE */}
+        <section className="relative border-y border-white/5 bg-[#070a0f]/70 px-5 py-16 sm:px-6 sm:py-20 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="overflow-hidden rounded-[2rem] border border-emerald-400/10 bg-gradient-to-br from-emerald-400/[0.07] via-[#09100f] to-cyan-400/[0.035] p-6 sm:p-8 lg:p-10">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
                 <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-emerald-400/15 bg-emerald-400/10">
                   <LockKeyhole className="h-6 w-6 text-emerald-300" />
@@ -452,12 +516,12 @@ function App() {
                     Privacidade em primeiro lugar
                   </p>
 
-                  <h3 className="mt-2 text-xl font-black text-white">
+                  <h3 className="mt-2 text-xl font-black text-white sm:text-2xl">
                     Seu resultado não precisa
                     da sua identidade.
                   </h3>
 
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+                  <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">
                     O projeto utiliza apenas
                     estatísticas anônimas. Não
                     é necessário informar nome,
@@ -467,23 +531,50 @@ function App() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
 
-            <div className="mt-16 text-center">
-              <p className="text-sm font-medium text-slate-500">
-                Pronto para descobrir um
-                novo caminho?
-              </p>
+        {/* CTA FINAL */}
+        <section className="px-5 py-20 sm:px-6 sm:py-24 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center">
+            <Sparkles className="mx-auto h-7 w-7 text-violet-300" />
 
-              <button
-                type="button"
-                onClick={startQuiz}
-                className="group mt-5 inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-slate-950 transition duration-300 hover:-translate-y-0.5 hover:bg-cyan-100"
-              >
-                Começar o quiz
+            <p className="mt-5 text-xs font-black uppercase tracking-[0.2em] text-violet-300">
+              Seu próximo passo
+            </p>
 
-                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </button>
-            </div>
+            <h2 className="mt-4 text-3xl font-black tracking-[-0.03em] text-white sm:text-4xl">
+              Pronto para descobrir um novo caminho?
+            </h2>
+
+            <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
+              Faça o quiz, conheça suas
+              principais compatibilidades e
+              encontre pontos de partida para
+              explorar a tecnologia.
+            </p>
+
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={startQuiz}
+              className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-white shadow-[0_0_40px_rgba(59,130,246,0.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_55px_rgba(59,130,246,0.3)]"
+            >
+              Começar o quiz
+
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </button>
+
+            <button
+              type="button"
+              onClick={openDashboard}
+              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-7 py-4 text-sm font-bold text-slate-300 transition hover:border-violet-400/20 hover:bg-violet-400/[0.05] hover:text-white"
+            >
+              <BarChart3 className="h-5 w-5 text-violet-300" />
+
+              Ver panorama
+            </button>
+          </div>
           </div>
         </section>
       </main>
@@ -500,12 +591,11 @@ function App() {
 
           <button
             type="button"
-            onClick={
-              openDashboard
-            }
+            onClick={openDashboard}
             className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 transition hover:text-slate-300"
           >
             <BarChart3 className="h-3.5 w-3.5" />
+
             Panorama dos participantes
           </button>
         </div>
@@ -597,38 +687,227 @@ function SectionHeading({
   )
 }
 
+interface FeaturePillProps {
+  icon: LucideIcon
+  text: string
+}
+
+function FeaturePill({
+  icon: Icon,
+  text,
+}: FeaturePillProps) {
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.035] px-4 py-3">
+      <Icon className="h-4 w-4 shrink-0 text-violet-300" />
+
+      <span className="text-xs font-bold text-slate-300">
+        {text}
+      </span>
+    </div>
+  )
+}
+
+type QuizInfoAccent =
+  | 'cyan'
+  | 'violet'
+  | 'emerald'
+
+interface QuizInfoItemProps {
+  accent: QuizInfoAccent
+  title: string
+  description: string
+}
+
+const quizInfoStyles: Record<
+  QuizInfoAccent,
+  {
+    border: string
+    background: string
+    icon: string
+  }
+> = {
+  cyan: {
+    border: 'border-cyan-400/15',
+    background: 'bg-cyan-400/[0.07]',
+    icon: 'text-cyan-300',
+  },
+
+  violet: {
+    border: 'border-violet-400/15',
+    background: 'bg-violet-400/[0.07]',
+    icon: 'text-violet-300',
+  },
+
+  emerald: {
+    border: 'border-emerald-400/15',
+    background: 'bg-emerald-400/[0.07]',
+    icon: 'text-emerald-300',
+  },
+}
+
+function QuizInfoItem({
+  accent,
+  title,
+  description,
+}: QuizInfoItemProps) {
+  const styles =
+    quizInfoStyles[accent]
+
+  return (
+    <div className="flex items-start gap-3">
+      <div
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${styles.border} ${styles.background}`}
+      >
+        <Check
+          className={`h-4 w-4 ${styles.icon}`}
+        />
+      </div>
+
+      <div>
+        <p className="text-sm font-black text-white">
+          {title}
+        </p>
+
+        <p className="mt-1 text-xs leading-5 text-slate-500">
+          {description}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+type HowItWorksAccent =
+  | 'cyan'
+  | 'violet'
+  | 'emerald'
+
 interface HowItWorksCardProps {
   number: string
   icon: LucideIcon
+  eyebrow: string
   title: string
   description: string
+  accent: HowItWorksAccent
+}
+
+const howItWorksStyles: Record<
+  HowItWorksAccent,
+  {
+    border: string
+    background: string
+    icon: string
+    iconBackground: string
+    eyebrow: string
+    number: string
+    glow: string
+  }
+> = {
+  cyan: {
+    border: 'border-cyan-400/15',
+    background:
+      'from-cyan-400/[0.08] to-transparent',
+    icon: 'text-cyan-300',
+    iconBackground:
+      'border-cyan-400/20 bg-cyan-400/10',
+    eyebrow: 'text-cyan-300',
+    number: 'text-cyan-400/30',
+    glow: 'bg-cyan-400/[0.07]',
+  },
+
+  violet: {
+    border:
+      'border-violet-400/15',
+    background:
+      'from-violet-400/[0.08] to-transparent',
+    icon: 'text-violet-300',
+    iconBackground:
+      'border-violet-400/20 bg-violet-400/10',
+    eyebrow:
+      'text-violet-300',
+    number:
+      'text-violet-400/30',
+    glow:
+      'bg-violet-400/[0.07]',
+  },
+
+  emerald: {
+    border:
+      'border-emerald-400/15',
+    background:
+      'from-emerald-400/[0.08] to-transparent',
+    icon:
+      'text-emerald-300',
+    iconBackground:
+      'border-emerald-400/20 bg-emerald-400/10',
+    eyebrow:
+      'text-emerald-300',
+    number:
+      'text-emerald-400/30',
+    glow:
+      'bg-emerald-400/[0.07]',
+  },
 }
 
 function HowItWorksCard({
   number,
   icon: Icon,
+  eyebrow,
   title,
   description,
+  accent,
 }: HowItWorksCardProps) {
+  const styles =
+    howItWorksStyles[accent]
+
   return (
-    <article className="relative rounded-3xl border border-white/[0.07] bg-[#090c12]/70 p-6">
-      <div className="flex items-center justify-between">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-blue-400/15 bg-blue-400/[0.07]">
-          <Icon className="h-5 w-5 text-blue-300" />
+    <article
+      className={`group relative min-h-[290px] overflow-hidden rounded-[1.7rem] border ${styles.border} bg-[#0d121b] p-6 shadow-xl shadow-black/20 transition duration-300 hover:-translate-y-1 hover:bg-[#101620] sm:p-7`}
+    >
+      <div
+        aria-hidden="true"
+        className={`absolute inset-0 bg-gradient-to-br ${styles.background} opacity-80`}
+      />
+
+      <div
+        aria-hidden="true"
+        className={`absolute -right-10 -top-10 h-32 w-32 rounded-full ${styles.glow} blur-3xl`}
+      />
+
+      <div className="relative flex h-full flex-col">
+        <div className="flex items-start justify-between gap-4">
+          <div
+            className={`flex h-12 w-12 items-center justify-center rounded-2xl border ${styles.iconBackground}`}
+          >
+            <Icon
+              className={`h-5 w-5 ${styles.icon}`}
+            />
+          </div>
+
+          <span
+            className={`font-mono text-3xl font-black ${styles.number}`}
+          >
+            {number}
+          </span>
         </div>
 
-        <span className="font-mono text-sm font-black text-slate-700">
-          {number}
-        </span>
+        <p
+          className={`mt-7 text-[10px] font-black uppercase tracking-[0.18em] ${styles.eyebrow}`}
+        >
+          {eyebrow}
+        </p>
+
+        <h3 className="mt-2 text-xl font-black text-white sm:text-2xl">
+          {title}
+        </h3>
+
+        <p className="mt-4 text-sm leading-7 text-slate-400">
+          {description}
+        </p>
+
+        <div className="mt-auto pt-6">
+          <div className="h-px bg-gradient-to-r from-white/10 to-transparent" />
+        </div>
       </div>
-
-      <h3 className="mt-6 text-xl font-black text-white">
-        {title}
-      </h3>
-
-      <p className="mt-3 text-sm leading-6 text-slate-400">
-        {description}
-      </p>
     </article>
   )
 }
