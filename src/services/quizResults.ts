@@ -10,8 +10,11 @@ import type { QuizResult } from '../types/result'
 
 export function mapQuizResultToInsert(
   result: QuizResult,
+  submissionKey: string,
 ): QuizResultInsert {
   return {
+    submission_key: submissionKey,
+
     hardware_score:
       result.scores.hardware.percentage,
 
@@ -36,13 +39,42 @@ export function mapQuizResultToInsert(
 
 export async function saveQuizResult(
   result: QuizResult,
+  submissionKey: string,
 ): Promise<void> {
   const payload =
-    mapQuizResultToInsert(result)
+    mapQuizResultToInsert(
+      result,
+      submissionKey,
+    )
 
-  const { error } = await supabase
-    .from('quiz_results')
-    .insert(payload)
+  const { error } = await supabase.rpc(
+    'submit_quiz_result',
+    {
+      p_submission_key:
+        payload.submission_key,
+
+      p_hardware_score:
+        payload.hardware_score,
+
+      p_programming_score:
+        payload.programming_score,
+
+      p_network_score:
+        payload.network_score,
+
+      p_cybersecurity_score:
+        payload.cybersecurity_score,
+
+      p_games_score:
+        payload.games_score,
+
+      p_ai_score:
+        payload.ai_score,
+
+      p_main_area:
+        payload.main_area,
+    },
+  )
 
   if (error) {
     throw new Error(
@@ -53,9 +85,10 @@ export async function saveQuizResult(
 
 export async function getQuizAreaDistribution():
   Promise<AreaDistributionRow[]> {
-  const { data, error } = await supabase.rpc(
-    'get_quiz_area_distribution',
-  )
+  const { data, error } =
+    await supabase.rpc(
+      'get_quiz_area_distribution',
+    )
 
   if (error) {
     throw new Error(
@@ -72,7 +105,9 @@ export async function getQuizAreaDistribution():
   return data.map((row) => ({
     area: row.area,
     total: Number(row.total),
-    percentage: Number(row.percentage),
+    percentage: Number(
+      row.percentage,
+    ),
     total_participants: Number(
       row.total_participants,
     ),
@@ -86,12 +121,16 @@ export async function testSupabaseConnection():
 
   const expectedAreas =
     new Set(
-      techAreas.map((area) => area.id),
+      techAreas.map(
+        (area) => area.id,
+      ),
     )
 
   const returnedAreas =
     new Set(
-      distribution.map((item) => item.area),
+      distribution.map(
+        (item) => item.area,
+      ),
     )
 
   const allAreasReturned =

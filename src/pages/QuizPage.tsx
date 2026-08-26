@@ -1,4 +1,8 @@
-import { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import {
   ArrowLeft,
@@ -10,32 +14,84 @@ import {
 } from 'lucide-react'
 
 import QuizProgress from '../components/QuizProgress'
+import ResultSaveStatus from '../components/ResultSaveStatus'
+
 import { quizQuestions } from '../data/questions'
+
 import ResultPage from './ResultPage'
 
-import type { QuizAnswers } from '../types/quiz'
-import type { QuizResult } from '../types/result'
+import type {
+  QuizAnswers,
+} from '../types/quiz'
 
-import { calculateQuizResult } from '../utils/scoring'
+import type {
+  QuizResult,
+} from '../types/result'
+
+import type {
+  QuizSaveStatus,
+} from '../types/database'
+
+import {
+  saveQuizResult,
+} from '../services/quizResults'
+
+import {
+  calculateQuizResult,
+} from '../utils/scoring'
 
 interface QuizPageProps {
   onExit: () => void
 }
 
-function QuizPage({ onExit }: QuizPageProps) {
-  const [currentQuestionIndex, setCurrentQuestionIndex] =
-    useState(0)
+function QuizPage({
+  onExit,
+}: QuizPageProps) {
+  const [
+    currentQuestionIndex,
+    setCurrentQuestionIndex,
+  ] = useState(0)
 
-  const [answers, setAnswers] = useState<QuizAnswers>({})
+  const [
+    answers,
+    setAnswers,
+  ] = useState<QuizAnswers>({})
 
-  const [result, setResult] =
-    useState<QuizResult | null>(null)
+  const [
+    result,
+    setResult,
+  ] = useState<QuizResult | null>(
+    null,
+  )
+
+  const [
+    saveStatus,
+    setSaveStatus,
+  ] = useState<QuizSaveStatus>(
+    'idle',
+  )
+
+  const [
+    saveError,
+    setSaveError,
+  ] = useState<string | null>(
+    null,
+  )
+
+  const submissionKeyRef =
+    useRef<string>(
+      crypto.randomUUID(),
+    )
 
   const currentQuestion =
-    quizQuestions[currentQuestionIndex]
+    quizQuestions[
+      currentQuestionIndex
+    ]
 
   const selectedOptionId =
-    answers[currentQuestion.id]
+    answers[
+      currentQuestion.id
+    ]
 
   const isLastQuestion =
     currentQuestionIndex ===
@@ -46,13 +102,50 @@ function QuizPage({ onExit }: QuizPageProps) {
       top: 0,
       behavior: 'smooth',
     })
-  }, [currentQuestionIndex, result])
+  }, [
+    currentQuestionIndex,
+    result,
+  ])
 
-  function handleSelect(optionId: string) {
-    setAnswers((currentAnswers) => ({
-      ...currentAnswers,
-      [currentQuestion.id]: optionId,
-    }))
+  function handleSelect(
+    optionId: string,
+  ) {
+    setAnswers(
+      (currentAnswers) => ({
+        ...currentAnswers,
+        [currentQuestion.id]:
+          optionId,
+      }),
+    )
+  }
+
+  function persistResult(
+    calculatedResult: QuizResult,
+  ) {
+    setSaveStatus('saving')
+    setSaveError(null)
+
+    void saveQuizResult(
+      calculatedResult,
+      submissionKeyRef.current,
+    )
+      .then(() => {
+        setSaveStatus('saved')
+      })
+      .catch((error: unknown) => {
+        setSaveStatus('error')
+
+        if (error instanceof Error) {
+          setSaveError(
+            error.message,
+          )
+          return
+        }
+
+        setSaveError(
+          'Ocorreu um erro inesperado durante o envio.',
+        )
+      })
   }
 
   function handleNext() {
@@ -63,9 +156,17 @@ function QuizPage({ onExit }: QuizPageProps) {
     if (isLastQuestion) {
       try {
         const calculatedResult =
-          calculateQuizResult(answers)
+          calculateQuizResult(
+            answers,
+          )
 
-        setResult(calculatedResult)
+        setResult(
+          calculatedResult,
+        )
+
+        persistResult(
+          calculatedResult,
+        )
       } catch (error) {
         console.error(
           'Não foi possível calcular o resultado:',
@@ -77,18 +178,22 @@ function QuizPage({ onExit }: QuizPageProps) {
     }
 
     setCurrentQuestionIndex(
-      (currentIndex) => currentIndex + 1,
+      (currentIndex) =>
+        currentIndex + 1,
     )
   }
 
   function handleBack() {
-    if (currentQuestionIndex === 0) {
+    if (
+      currentQuestionIndex === 0
+    ) {
       onExit()
       return
     }
 
     setCurrentQuestionIndex(
-      (currentIndex) => currentIndex - 1,
+      (currentIndex) =>
+        currentIndex - 1,
     )
   }
 
@@ -102,18 +207,43 @@ function QuizPage({ onExit }: QuizPageProps) {
 
   function handleRestart() {
     setAnswers({})
+
     setCurrentQuestionIndex(0)
+
     setResult(null)
+
+    setSaveStatus('idle')
+
+    setSaveError(null)
+
+    submissionKeyRef.current =
+      crypto.randomUUID()
+  }
+
+  function handleRetrySave() {
+    if (!result) {
+      return
+    }
+
+    persistResult(result)
   }
 
   if (result) {
     return (
-      <ResultPage
-        result={result}
-        onReview={handleReview}
-        onRestart={handleRestart}
-        onExit={onExit}
-      />
+      <>
+        <ResultPage
+          result={result}
+          onReview={handleReview}
+          onRestart={handleRestart}
+          onExit={onExit}
+        />
+
+        <ResultSaveStatus
+          status={saveStatus}
+          errorMessage={saveError}
+          onRetry={handleRetrySave}
+        />
+      </>
     )
   }
 
@@ -165,8 +295,13 @@ function QuizPage({ onExit }: QuizPageProps) {
 
         <div className="relative mx-auto max-w-3xl">
           <QuizProgress
-            current={currentQuestionIndex + 1}
-            total={quizQuestions.length}
+            current={
+              currentQuestionIndex +
+              1
+            }
+            total={
+              quizQuestions.length
+            }
           />
 
           <div className="mt-8 rounded-[2rem] border border-white/[0.08] bg-[#090c13]/85 p-5 shadow-2xl shadow-black/30 backdrop-blur-xl sm:p-8">
@@ -179,29 +314,41 @@ function QuizPage({ onExit }: QuizPageProps) {
             </div>
 
             <h1 className="mt-5 text-2xl font-black leading-tight tracking-[-0.025em] text-white sm:text-3xl">
-              {currentQuestion.question}
+              {
+                currentQuestion.question
+              }
             </h1>
 
             {currentQuestion.context && (
               <p className="mt-4 text-sm leading-6 text-slate-500 sm:text-base">
-                {currentQuestion.context}
+                {
+                  currentQuestion.context
+                }
               </p>
             )}
 
             <fieldset className="mt-8 space-y-3">
               <legend className="sr-only">
                 Alternativas da pergunta{' '}
-                {currentQuestionIndex + 1}
+                {
+                  currentQuestionIndex +
+                  1
+                }
               </legend>
 
               {currentQuestion.options.map(
-                (option, optionIndex) => {
+                (
+                  option,
+                  optionIndex,
+                ) => {
                   const selected =
-                    selectedOptionId === option.id
+                    selectedOptionId ===
+                    option.id
 
                   const letter =
                     String.fromCharCode(
-                      65 + optionIndex,
+                      65 +
+                        optionIndex,
                     )
 
                   return (
@@ -216,11 +363,19 @@ function QuizPage({ onExit }: QuizPageProps) {
                     >
                       <input
                         type="radio"
-                        name={currentQuestion.id}
-                        value={option.id}
-                        checked={selected}
+                        name={
+                          currentQuestion.id
+                        }
+                        value={
+                          option.id
+                        }
+                        checked={
+                          selected
+                        }
                         onChange={() =>
-                          handleSelect(option.id)
+                          handleSelect(
+                            option.id,
+                          )
                         }
                         className="sr-only"
                       />
@@ -249,7 +404,9 @@ function QuizPage({ onExit }: QuizPageProps) {
                               : 'text-slate-400 group-hover:text-slate-300',
                           ].join(' ')}
                         >
-                          {option.text}
+                          {
+                            option.text
+                          }
                         </p>
                       </div>
 
@@ -276,7 +433,8 @@ function QuizPage({ onExit }: QuizPageProps) {
               >
                 <ArrowLeft className="h-4 w-4" />
 
-                {currentQuestionIndex === 0
+                {currentQuestionIndex ===
+                0
                   ? 'Voltar ao início'
                   : 'Voltar'}
               </button>
@@ -284,7 +442,9 @@ function QuizPage({ onExit }: QuizPageProps) {
               <button
                 type="button"
                 onClick={handleNext}
-                disabled={!selectedOptionId}
+                disabled={
+                  !selectedOptionId
+                }
                 className="group inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 px-6 py-3 text-sm font-black uppercase tracking-[0.08em] text-white transition enabled:hover:-translate-y-0.5 enabled:hover:shadow-[0_0_35px_rgba(59,130,246,0.22)] disabled:cursor-not-allowed disabled:opacity-30"
               >
                 {isLastQuestion
@@ -303,8 +463,9 @@ function QuizPage({ onExit }: QuizPageProps) {
           <div className="mt-5 flex items-center justify-center gap-2 text-center text-xs leading-5 text-slate-600">
             <Sparkles className="h-3.5 w-3.5 shrink-0" />
 
-            Suas escolhas são mantidas caso você
-            volte para uma pergunta anterior.
+            Suas escolhas são mantidas
+            caso você volte para uma
+            pergunta anterior.
           </div>
         </div>
       </main>
@@ -313,16 +474,3 @@ function QuizPage({ onExit }: QuizPageProps) {
 }
 
 export default QuizPage
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,7 @@
 import type { TechAreaIcon } from '../data/areas'
 
 export interface QuizResultInsert {
+  submission_key: string
   hardware_score: number
   programming_score: number
   network_score: number
@@ -16,3 +17,9 @@ export interface AreaDistributionRow {
   percentage: number
   total_participants: number
 }
+
+export type QuizSaveStatus =
+  | 'idle'
+  | 'saving'
+  | 'saved'
+  | 'error'
