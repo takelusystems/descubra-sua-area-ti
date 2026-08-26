@@ -6,12 +6,14 @@ import {
   RefreshCw,
 } from 'lucide-react'
 
-import type { QuizSaveStatus } from '../types/database'
+import type {
+  QuizSaveStatus,
+} from '../types/database'
 
 interface ResultSaveStatusProps {
   status: QuizSaveStatus
-  errorMessage: string | null
-  onRetry: () => void
+  errorMessage?: string | null
+  onRetry?: () => void
 }
 
 function ResultSaveStatus({
@@ -23,101 +25,103 @@ function ResultSaveStatus({
     return null
   }
 
-  if (status === 'saving') {
-    return (
-      <div className="fixed bottom-4 left-4 right-4 z-[100] sm:left-auto sm:right-5 sm:w-[360px]">
-        <div className="rounded-2xl border border-blue-400/20 bg-[#0a1019]/95 p-4 shadow-2xl shadow-black/50 backdrop-blur-xl">
+  return (
+    <div
+      className="
+        pointer-events-none
+        fixed
+        left-4
+        right-4
+        top-4
+        z-[100]
+        sm:left-auto
+        sm:right-6
+        sm:top-6
+        sm:w-full
+        sm:max-w-[355px]
+      "
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {status === 'saving' && (
+        <div className="pointer-events-auto rounded-2xl border border-cyan-400/20 bg-[#071116]/95 p-4 shadow-2xl shadow-black/40 backdrop-blur-xl">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-blue-400/20 bg-blue-400/10">
-              <LoaderCircle className="h-5 w-5 animate-spin text-blue-300" />
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-cyan-400/20 bg-cyan-400/10">
+              <LoaderCircle className="h-5 w-5 animate-spin text-cyan-300" />
             </div>
 
-            <div>
-              <p className="text-sm font-black text-white">
-                Salvando resultado
-              </p>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <Cloud className="h-4 w-4 text-cyan-300" />
+
+                <p className="font-black text-white">
+                  Salvando resultado
+                </p>
+              </div>
 
               <p className="mt-1 text-xs leading-5 text-slate-500">
                 Estamos contabilizando sua
-                participação anônima no panorama
-                geral.
+                participação anônima.
               </p>
             </div>
           </div>
         </div>
-      </div>
-    )
-  }
+      )}
 
-  if (status === 'saved') {
-    return (
-      <div className="fixed bottom-4 left-4 right-4 z-[100] sm:left-auto sm:right-5 sm:w-[360px]">
-        <div className="rounded-2xl border border-emerald-400/20 bg-[#09120f]/95 p-4 shadow-2xl shadow-black/50 backdrop-blur-xl">
+      {status === 'saved' && (
+        <div className="pointer-events-auto rounded-2xl border border-emerald-400/25 bg-[#07140f]/95 p-4 shadow-2xl shadow-black/40 backdrop-blur-xl">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-400/20 bg-emerald-400/10">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-400/20 bg-emerald-400/10">
               <CheckCircle2 className="h-5 w-5 text-emerald-300" />
             </div>
 
-            <div>
-              <p className="text-sm font-black text-white">
+            <div className="min-w-0">
+              <p className="font-black text-white">
                 Resultado contabilizado
               </p>
 
               <p className="mt-1 text-xs leading-5 text-slate-500">
                 Sua participação anônima já
-                faz parte das estatísticas gerais.
+                faz parte das estatísticas
+                gerais.
               </p>
             </div>
           </div>
         </div>
-      </div>
-    )
-  }
+      )}
 
-  return (
-    <div className="fixed bottom-4 left-4 right-4 z-[100] sm:left-auto sm:right-5 sm:w-[390px]">
-      <div className="rounded-2xl border border-amber-400/20 bg-[#151109]/95 p-4 shadow-2xl shadow-black/50 backdrop-blur-xl">
-        <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-400/10">
-            <AlertTriangle className="h-5 w-5 text-amber-300" />
+      {status === 'error' && (
+        <div className="pointer-events-auto rounded-2xl border border-amber-400/25 bg-[#171107]/95 p-4 shadow-2xl shadow-black/40 backdrop-blur-xl">
+          <div className="flex items-start gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-400/10">
+              <AlertTriangle className="h-5 w-5 text-amber-300" />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <p className="font-black text-white">
+                Resultado não confirmado
+              </p>
+
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                {errorMessage ||
+                  'Não foi possível contabilizar sua participação agora.'}
+              </p>
+
+              {onRetry && (
+                <button
+                  type="button"
+                  onClick={onRetry}
+                  className="mt-3 inline-flex items-center gap-2 rounded-lg border border-amber-400/20 bg-amber-400/[0.07] px-3 py-2 text-xs font-bold text-amber-200 transition hover:bg-amber-400/[0.12]"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+
+                  Tentar novamente
+                </button>
+              )}
+            </div>
           </div>
-
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-black text-white">
-              Resultado não confirmado
-            </p>
-
-            <p className="mt-1 text-xs leading-5 text-slate-500">
-              Seu perfil continua válido e pode ser
-              consultado normalmente. Não conseguimos
-              confirmar o envio da estatística.
-            </p>
-
-            {errorMessage && (
-              <details className="mt-2">
-                <summary className="cursor-pointer text-[11px] font-semibold text-slate-600">
-                  Detalhes técnicos
-                </summary>
-
-                <p className="mt-2 break-words text-[10px] leading-5 text-slate-600">
-                  {errorMessage}
-                </p>
-              </details>
-            )}
-
-            <button
-              type="button"
-              onClick={onRetry}
-              className="mt-3 inline-flex items-center gap-2 rounded-lg border border-amber-400/15 bg-amber-400/[0.06] px-3 py-2 text-xs font-bold text-amber-200 transition hover:bg-amber-400/[0.1]"
-            >
-              <RefreshCw className="h-3.5 w-3.5" />
-              Tentar novamente
-            </button>
-          </div>
-
-          <Cloud className="h-4 w-4 shrink-0 text-slate-700" />
         </div>
-      </div>
+      )}
     </div>
   )
 }
