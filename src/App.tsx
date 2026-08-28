@@ -3,7 +3,6 @@ import { useState } from 'react'
 import {
   ArrowRight,
   BarChart3,
-  BookOpenCheck,
   BrainCircuit,
   BriefcaseBusiness,
   Check,
@@ -24,7 +23,6 @@ import {
   type TechAreaIcon,
 } from './data/areas'
 
-import CourseInterestPage from './pages/CourseInterestPage'
 import DashboardPage from './pages/DashboardPage'
 import QuizPage from './pages/QuizPage'
 
@@ -44,7 +42,6 @@ type AppView =
   | 'landing'
   | 'quiz'
   | 'dashboard'
-  | 'courses'
 
 function App() {
   const [
@@ -69,11 +66,6 @@ function App() {
     goToTop()
   }
 
-  function openCourses() {
-    setCurrentView('courses')
-    goToTop()
-  }
-
   function goHome() {
     setCurrentView('landing')
     goToTop()
@@ -95,17 +87,6 @@ function App() {
       <DashboardPage
         onBack={goHome}
         onStartQuiz={startQuiz}
-      />
-    )
-  }
-
-  if (
-    currentView ===
-    'courses'
-  ) {
-    return (
-      <CourseInterestPage
-        onBack={goHome}
       />
     )
   }
@@ -142,19 +123,6 @@ function App() {
           </a>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={openCourses}
-              aria-label="Pesquisa de interesse em cursos"
-              className="inline-flex items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-xs font-bold text-emerald-200 transition hover:border-emerald-400/30 hover:bg-emerald-400/[0.09] sm:px-4 sm:text-sm"
-            >
-              <BookOpenCheck className="h-4 w-4" />
-
-              <span className="hidden md:inline">
-                Cursos
-              </span>
-            </button>
-
             <button
               type="button"
               onClick={openDashboard}
@@ -767,7 +735,8 @@ const quizInfoStyles: Record<
   }
 > = {
   cyan: {
-    border: 'border-cyan-400/15',
+    border:
+      'border-cyan-400/15',
     background:
       'bg-cyan-400/[0.07]',
     icon: 'text-cyan-300',
