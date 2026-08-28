@@ -1,4 +1,9 @@
 import {
+  useEffect,
+  useState,
+} from 'react'
+
+import {
   AlertTriangle,
   CheckCircle2,
   Cloud,
@@ -21,7 +26,41 @@ function ResultSaveStatus({
   errorMessage,
   onRetry,
 }: ResultSaveStatusProps) {
-  if (status === 'idle') {
+  const [
+    isVisible,
+    setIsVisible,
+  ] = useState(
+    status !== 'idle',
+  )
+
+  useEffect(() => {
+    if (status === 'idle') {
+      setIsVisible(false)
+      return
+    }
+
+    setIsVisible(true)
+
+    if (status !== 'saved') {
+      return
+    }
+
+    const timeoutId =
+      window.setTimeout(() => {
+        setIsVisible(false)
+      }, 3500)
+
+    return () => {
+      window.clearTimeout(
+        timeoutId,
+      )
+    }
+  }, [status])
+
+  if (
+    status === 'idle' ||
+    !isVisible
+  ) {
     return null
   }
 
@@ -81,9 +120,9 @@ function ResultSaveStatus({
               </p>
 
               <p className="mt-1 text-xs leading-5 text-slate-500">
-                Sua participação anônima já
-                faz parte das estatísticas
-                gerais.
+                Sua participação anônima
+                já faz parte das
+                estatísticas gerais.
               </p>
             </div>
           </div>

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 
 import {
+  useEffect,
   useRef,
   useState,
   type FormEvent,
@@ -143,6 +144,23 @@ function CourseInterestPage({
 
   const isSaving =
     saveStatus === 'saving'
+
+  useEffect(() => {
+  if (saveStatus !== 'saved') {
+    return
+  }
+
+  const timeoutId =
+    window.setTimeout(() => {
+      onBack()
+    }, 3000)
+
+  return () => {
+    window.clearTimeout(
+      timeoutId,
+    )
+  }
+}, [saveStatus, onBack])
 
   function markFormChanged() {
     setFormError(null)
@@ -565,7 +583,11 @@ function CourseInterestPage({
 
           <form
             onSubmit={handleSubmit}
-            className="mt-12 space-y-7"
+            className={`mt-12 space-y-7 ${
+              saveStatus === 'saved'
+                ? 'pointer-events-none'
+                : ''
+            }`}
             aria-busy={isSaving}
           >
             <FormSection
@@ -1216,17 +1238,11 @@ function CourseInterestPage({
                         participar. Suas
                         preferências já
                         foram registradas.
+                        Você será direcionado
+                        para a página inicial
+                        em alguns segundos.
                       </p>
 
-                      <p className="mt-2 text-xs leading-5 text-slate-600">
-                        Se você alterar
-                        alguma resposta, o
-                        formulário poderá
-                        ser enviado
-                        novamente sem criar
-                        uma duplicidade para
-                        esta participação.
-                      </p>
                     </div>
                   </div>
                 </div>
