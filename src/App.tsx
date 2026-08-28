@@ -3,6 +3,7 @@ import { useState } from 'react'
 import {
   ArrowRight,
   BarChart3,
+  BookOpenCheck,
   BrainCircuit,
   BriefcaseBusiness,
   Check,
@@ -23,10 +24,14 @@ import {
   type TechAreaIcon,
 } from './data/areas'
 
+import CourseInterestPage from './pages/CourseInterestPage'
 import DashboardPage from './pages/DashboardPage'
 import QuizPage from './pages/QuizPage'
 
-const areaIcons: Record<TechAreaIcon, LucideIcon> = {
+const areaIcons: Record<
+  TechAreaIcon,
+  LucideIcon
+> = {
   hardware: Cpu,
   programming: Code2,
   networks: Network,
@@ -39,6 +44,7 @@ type AppView =
   | 'landing'
   | 'quiz'
   | 'dashboard'
+  | 'courses'
 
 function App() {
   const [
@@ -63,6 +69,11 @@ function App() {
     goToTop()
   }
 
+  function openCourses() {
+    setCurrentView('courses')
+    goToTop()
+  }
+
   function goHome() {
     setCurrentView('landing')
     goToTop()
@@ -76,11 +87,25 @@ function App() {
     )
   }
 
-  if (currentView === 'dashboard') {
+  if (
+    currentView ===
+    'dashboard'
+  ) {
     return (
       <DashboardPage
         onBack={goHome}
         onStartQuiz={startQuiz}
+      />
+    )
+  }
+
+  if (
+    currentView ===
+    'courses'
+  ) {
+    return (
+      <CourseInterestPage
+        onBack={goHome}
       />
     )
   }
@@ -119,19 +144,33 @@ function App() {
           <div className="flex items-center gap-2">
             <button
               type="button"
+              onClick={openCourses}
+              aria-label="Pesquisa de interesse em cursos"
+              className="inline-flex items-center gap-2 rounded-xl border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-xs font-bold text-emerald-200 transition hover:border-emerald-400/30 hover:bg-emerald-400/[0.09] sm:px-4 sm:text-sm"
+            >
+              <BookOpenCheck className="h-4 w-4" />
+
+              <span className="hidden md:inline">
+                Cursos
+              </span>
+            </button>
+
+            <button
+              type="button"
               onClick={openDashboard}
+              aria-label="Abrir panorama"
               className="inline-flex items-center gap-2 rounded-xl border border-violet-400/15 bg-violet-400/[0.05] px-3 py-2 text-xs font-bold text-violet-200 transition hover:border-violet-400/30 hover:bg-violet-400/[0.09] sm:px-4 sm:text-sm"
             >
               <BarChart3 className="h-4 w-4" />
 
-              <span className="hidden sm:inline">
+              <span className="hidden md:inline">
                 Panorama
               </span>
             </button>
 
             <a
               href="#areas"
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white sm:px-4 sm:text-sm"
+              className="hidden rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-white/20 hover:bg-white/[0.07] hover:text-white sm:inline-flex sm:px-4 sm:text-sm"
             >
               Explorar áreas
             </a>
@@ -140,7 +179,6 @@ function App() {
       </header>
 
       <main>
-        {/* HERO */}
         <section
           id="inicio"
           className="hero-glow relative px-5 pb-20 pt-16 sm:px-6 sm:pb-24 sm:pt-20 lg:px-8 lg:pb-32 lg:pt-28"
@@ -149,6 +187,7 @@ function App() {
             <div>
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-violet-200">
                 <Sparkles className="h-3.5 w-3.5" />
+
                 Quiz vocacional de tecnologia
               </div>
 
@@ -185,6 +224,7 @@ function App() {
                   className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-7 py-4 text-sm font-bold text-slate-300 transition hover:border-violet-400/20 hover:bg-violet-400/[0.05] hover:text-white"
                 >
                   <BarChart3 className="h-5 w-5 text-violet-300" />
+
                   Ver panorama
                 </button>
               </div>
@@ -323,7 +363,6 @@ function App() {
           </div>
         </section>
 
-        {/* ÁREAS */}
         <section
           id="areas"
           className="relative border-y border-white/5 bg-[#070a10]/75 px-5 py-20 sm:px-6 sm:py-24 lg:px-8"
@@ -344,7 +383,9 @@ function App() {
               {techAreas.map(
                 (area) => {
                   const Icon =
-                    areaIcons[area.id]
+                    areaIcons[
+                      area.id
+                    ]
 
                   return (
                     <article
@@ -374,7 +415,9 @@ function App() {
                         </h3>
 
                         <p className="mt-3 text-sm leading-6 text-slate-400">
-                          {area.description}
+                          {
+                            area.description
+                          }
                         </p>
 
                         <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/10 bg-emerald-400/[0.04] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
@@ -391,7 +434,6 @@ function App() {
           </div>
         </section>
 
-        {/* COMO FUNCIONA */}
         <section className="relative px-5 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
           <div
             aria-hidden="true"
@@ -502,7 +544,6 @@ function App() {
           </div>
         </section>
 
-        {/* PRIVACIDADE */}
         <section className="relative border-y border-white/5 bg-[#070a0f]/70 px-5 py-16 sm:px-6 sm:py-20 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="overflow-hidden rounded-[2rem] border border-emerald-400/10 bg-gradient-to-br from-emerald-400/[0.07] via-[#09100f] to-cyan-400/[0.035] p-6 sm:p-8 lg:p-10">
@@ -534,7 +575,6 @@ function App() {
           </div>
         </section>
 
-        {/* CTA FINAL */}
         <section className="px-5 py-20 sm:px-6 sm:py-24 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <Sparkles className="mx-auto h-7 w-7 text-violet-300" />
@@ -555,26 +595,26 @@ function App() {
             </p>
 
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={startQuiz}
-              className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-white shadow-[0_0_40px_rgba(59,130,246,0.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_55px_rgba(59,130,246,0.3)]"
-            >
-              Começar o quiz
+              <button
+                type="button"
+                onClick={startQuiz}
+                className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-violet-500 px-7 py-4 text-sm font-black uppercase tracking-[0.08em] text-white shadow-[0_0_40px_rgba(59,130,246,0.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_55px_rgba(59,130,246,0.3)]"
+              >
+                Começar o quiz
 
-              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </button>
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </button>
 
-            <button
-              type="button"
-              onClick={openDashboard}
-              className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-7 py-4 text-sm font-bold text-slate-300 transition hover:border-violet-400/20 hover:bg-violet-400/[0.05] hover:text-white"
-            >
-              <BarChart3 className="h-5 w-5 text-violet-300" />
+              <button
+                type="button"
+                onClick={openDashboard}
+                className="inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-7 py-4 text-sm font-bold text-slate-300 transition hover:border-violet-400/20 hover:bg-violet-400/[0.05] hover:text-white"
+              >
+                <BarChart3 className="h-5 w-5 text-violet-300" />
 
-              Ver panorama
-            </button>
-          </div>
+                Ver panorama
+              </button>
+            </div>
           </div>
         </section>
       </main>
@@ -728,20 +768,27 @@ const quizInfoStyles: Record<
 > = {
   cyan: {
     border: 'border-cyan-400/15',
-    background: 'bg-cyan-400/[0.07]',
+    background:
+      'bg-cyan-400/[0.07]',
     icon: 'text-cyan-300',
   },
 
   violet: {
-    border: 'border-violet-400/15',
-    background: 'bg-violet-400/[0.07]',
-    icon: 'text-violet-300',
+    border:
+      'border-violet-400/15',
+    background:
+      'bg-violet-400/[0.07]',
+    icon:
+      'text-violet-300',
   },
 
   emerald: {
-    border: 'border-emerald-400/15',
-    background: 'bg-emerald-400/[0.07]',
-    icon: 'text-emerald-300',
+    border:
+      'border-emerald-400/15',
+    background:
+      'bg-emerald-400/[0.07]',
+    icon:
+      'text-emerald-300',
   },
 }
 
@@ -803,15 +850,20 @@ const howItWorksStyles: Record<
   }
 > = {
   cyan: {
-    border: 'border-cyan-400/15',
+    border:
+      'border-cyan-400/15',
     background:
       'from-cyan-400/[0.08] to-transparent',
-    icon: 'text-cyan-300',
+    icon:
+      'text-cyan-300',
     iconBackground:
       'border-cyan-400/20 bg-cyan-400/10',
-    eyebrow: 'text-cyan-300',
-    number: 'text-cyan-400/30',
-    glow: 'bg-cyan-400/[0.07]',
+    eyebrow:
+      'text-cyan-300',
+    number:
+      'text-cyan-400/30',
+    glow:
+      'bg-cyan-400/[0.07]',
   },
 
   violet: {
@@ -819,7 +871,8 @@ const howItWorksStyles: Record<
       'border-violet-400/15',
     background:
       'from-violet-400/[0.08] to-transparent',
-    icon: 'text-violet-300',
+    icon:
+      'text-violet-300',
     iconBackground:
       'border-violet-400/20 bg-violet-400/10',
     eyebrow:
